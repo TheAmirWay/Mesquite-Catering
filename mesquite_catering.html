@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mesquite Catering CRM</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f0f;--s1:#171717;--s2:#1e1e1e;--s3:#252525;--brd:#2e2e2e;--acc:#e8622a;--acc2:#f5a470;--txt:#f0ead8;--mu:#888;--gr:#5cb87a;--bl:#5b9bd5;--am:#e8aa2a}
+body{font-family:system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;font-size:13px}
+.shell{display:grid;grid-template-columns:190px 1fr;grid-template-rows:50px calc(100vh - 50px);height:100vh}
+.top{grid-column:1/-1;background:var(--s1);border-bottom:1px solid var(--brd);display:flex;align-items:center;padding:0 16px;gap:10px;position:sticky;top:0;z-index:50;flex-wrap:wrap}
+.logo{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.logo-dot{width:9px;height:9px;border-radius:50%;background:var(--acc)}
+.stats{display:flex;gap:10px;margin-left:auto;font-size:11px;color:var(--mu);flex-wrap:wrap}
+.stats b{color:var(--txt)}
+.btn{padding:5px 12px;border-radius:6px;border:1px solid var(--brd);background:var(--s2);color:var(--txt);font-size:12px;cursor:pointer;font-family:inherit;transition:.1s;white-space:nowrap}
+.btn:hover{background:var(--s3)}
+.btn.a{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.a:hover{background:#d4561f}
+.sidebar{background:var(--s1);border-right:1px solid var(--brd);overflow-y:auto;padding:8px 0}
+.nl{padding:12px 12px 3px;font-size:10px;color:var(--mu);letter-spacing:.08em;text-transform:uppercase}
+.ni{padding:7px 12px;cursor:pointer;color:var(--mu);display:flex;align-items:center;gap:7px;font-size:12px;border-left:2px solid transparent;transition:all .1s}
+.ni:hover{color:var(--txt);background:var(--s2)}
+.ni.on{color:var(--acc);border-left-color:var(--acc);background:rgba(232,98,42,.07)}
+.np{margin-left:auto;background:var(--s3);color:var(--mu);font-size:10px;padding:1px 5px;border-radius:10px;border:1px solid var(--brd)}
+.np.hot{background:rgba(232,98,42,.15);border-color:var(--acc);color:var(--acc2)}
+.main{overflow-y:auto;padding:16px}
+.view{display:none}.view.on{display:block}
+.tb{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tb h2{font-size:16px;font-weight:600;flex:1;min-width:100px}
+.srch{background:var(--s2);border:1px solid var(--brd);border-radius:6px;padding:7px 11px;color:var(--txt);font-family:inherit;font-size:12px;width:180px;outline:none}
+.srch:focus{border-color:var(--acc)}
+.srch::placeholder{color:var(--mu)}
+.sel{background:var(--s2);border:1px solid var(--brd);border-radius:6px;padding:7px 9px;color:var(--txt);font-family:inherit;font-size:12px;outline:none;cursor:pointer}
+.tw{background:var(--s1);border:1px solid var(--brd);border-radius:10px;overflow:hidden}
+.th{display:grid;grid-template-columns:20px 2fr 2fr 1.2fr .9fr .85fr 52px;padding:6px 10px;background:var(--s2);border-bottom:1px solid var(--brd);font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;gap:6px}
+.tr{display:grid;grid-template-columns:20px 2fr 2fr 1.2fr .9fr .85fr 52px;padding:10px 10px;border-bottom:1px solid var(--brd);align-items:center;cursor:pointer;transition:background .1s;gap:6px}
+.tr:last-child{border-bottom:none}
+.tr:hover{background:var(--s2)}
+.tr.alt{background:rgba(255,255,255,.012)}
+.sb2{background:none;border:none;cursor:pointer;font-size:13px;padding:0;line-height:1;color:#444;transition:.1s}
+.sb2.lit{color:var(--am)}
+.cn{font-weight:600;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cs{font-size:10px;color:var(--mu);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mono{font-family:monospace;font-size:11px;color:var(--txt)}
+.pill{display:inline-flex;align-items:center;padding:2px 6px;border-radius:20px;font-size:10px;font-weight:600;white-space:nowrap}
+.pD{background:rgba(232,98,42,.15);color:#f5a470}
+.pH{background:rgba(91,155,213,.15);color:#7ec2f7}
+.pC{background:rgba(92,184,122,.15);color:#7ddb9b}
+.pS{background:rgba(155,126,212,.15);color:#c4a8f5}
+.pH2{background:rgba(232,170,42,.15);color:#f5cd7a}
+.pGv{background:rgba(200,200,200,.1);color:#bbb}
+.pBh{background:rgba(100,180,255,.12);color:#7ec2f7}
+.stg{font-size:10px;padding:2px 6px;border-radius:10px;font-weight:500;background:#1a1a1a;color:#555;border:1px solid #2a2a2a}
+.ra{display:flex;gap:3px}
+.ib{width:23px;height:23px;border-radius:5px;border:1px solid var(--brd);background:none;cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;color:var(--mu);transition:.1s}
+.ib:hover{background:var(--s3);color:var(--txt)}
+.empty{text-align:center;padding:36px;color:var(--mu)}
+.sc-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sc{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:14px}
+.sc h3{font-size:13px;font-weight:600;margin-bottom:8px;color:var(--acc2)}
+.sc-box{background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:10px;font-size:11px;line-height:1.75;color:var(--txt);white-space:pre-wrap;font-family:inherit}
+.pipeline{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;overflow-x:auto;padding-bottom:6px}
+.pcol{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:9px;min-width:140px}
+.pch{display:flex;align-items:center;justify-content:space-between;padding-bottom:7px;margin-bottom:7px;border-bottom:1px solid var(--brd)}
+.pcc{background:var(--s3);color:var(--mu);font-size:10px;padding:1px 5px;border-radius:10px}
+.pc{background:var(--s2);border:1px solid var(--brd);border-radius:6px;padding:7px 8px;margin-bottom:5px;cursor:pointer;transition:.1s}
+.pc:hover{border-color:var(--acc)}
+.pcn{font-size:11px;font-weight:600;margin-bottom:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pct{font-size:10px;color:var(--mu)}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+.ov.on{display:flex}
+.mod{background:var(--s1);border:1px solid var(--brd);border-radius:14px;width:100%;max-width:500px;max-height:90vh;overflow-y:auto}
+.mhd{padding:14px 16px 10px;border-bottom:1px solid var(--brd);display:flex;align-items:center;justify-content:space-between}
+.mhd h3{font-size:14px;font-weight:600}
+.mx{background:none;border:none;cursor:pointer;font-size:17px;color:var(--mu);line-height:1}
+.mb{padding:14px 16px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px}
+.fr.f{grid-template-columns:1fr}
+.fg{display:flex;flex-direction:column;gap:3px}
+.fl{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.07em}
+.fi{background:var(--s2);border:1px solid var(--brd);border-radius:6px;padding:7px 9px;color:var(--txt);font-family:inherit;font-size:12px;outline:none;width:100%;transition:.12s}
+.fi:focus{border-color:var(--acc)}
+.mft{padding:10px 16px 14px;border-top:1px solid var(--brd);display:flex;gap:7px;justify-content:flex-end}
+.det-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:16px;margin-bottom:12px}
+.df label{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;display:block;margin-bottom:3px}
+.df span{font-size:13px;font-weight:500}
+.nb{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:14px}
+.stgb{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.ec{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:16px;margin-bottom:12px}
+.ec h3{font-size:14px;font-weight:600;margin-bottom:5px}
+.ec p{font-size:12px;color:var(--mu);line-height:1.6;margin-bottom:10px}
+.cpre{background:var(--bg);border:1px solid var(--brd);border-radius:6px;padding:9px;font-family:monospace;font-size:10px;color:var(--mu);line-height:1.8;margin-bottom:8px;overflow-x:auto;white-space:pre}
+.apollo-card{background:var(--s1);border:1px solid var(--brd);border-radius:10px;padding:16px;margin-bottom:12px}
+.apollo-card h3{font-size:14px;font-weight:600;margin-bottom:10px;color:var(--acc2)}
+.apollo-step{display:flex;gap:10px;align-items:flex-start;margin-bottom:12px}
+.a-num{width:22px;height:22px;border-radius:50%;background:var(--acc);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.a-txt{font-size:12px;line-height:1.7;color:var(--txt)}
+.a-txt b{color:var(--acc2)}
+.toast{position:fixed;bottom:16px;right:16px;background:var(--s1);border:1px solid var(--brd);border-radius:8px;padding:9px 14px;font-size:12px;z-index:999;opacity:0;transform:translateY(7px);transition:all .2s;pointer-events:none;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+<div class="shell">
+<div class="top">
+  <div class="logo"><div class="logo-dot"></div>Mesquite Catering CRM</div>
+  <div class="stats">
+    <span>Total <b id="sT">0</b></span>
+    <span>⭐ <b id="sS">0</b></span>
+    <span>🚗 <b id="sD">0</b></span>
+    <span>🏥 <b id="sH">0</b></span>
+    <span>🏢 <b id="sC">0</b></span>
+    <span>🏫 <b id="sSd">0</b></span>
+    <span>🏨 <b id="sHt">0</b></span>
+    <span>🏛 <b id="sG">0</b></span>
+    <span>🧠 <b id="sBh">0</b></span>
+  </div>
+  <button class="btn a" onclick="openAdd()">+ Add Contact</button>
+  <button class="btn" onclick="sv('export')">Export CSV</button>
+</div>
+
+<div class="sidebar">
+  <div class="nl">Views</div>
+  <div class="ni on" id="nav-all" onclick="sv('contacts',this)">📋 All Contacts <span class="np" id="np-all">0</span></div>
+  <div class="ni" id="nav-star" onclick="sv('starred',this)">⭐ Starred <span class="np hot" id="np-star">0</span></div>
+  <div class="ni" id="nav-pipeline" onclick="sv('pipeline',this)">📊 Pipeline</div>
+  <div class="nl">By Type</div>
+  <div class="ni" onclick="ft('Dealership',this)">🚗 Dealerships</div>
+  <div class="ni" onclick="ft('Hospital',this)">🏥 Hospitals</div>
+  <div class="ni" onclick="ft('Corporate',this)">🏢 Corporate</div>
+  <div class="ni" onclick="ft('School District',this)">🏫 School Districts</div>
+  <div class="ni" onclick="ft('Hotel/Resort',this)">🏨 Hotels &amp; Resorts</div>
+  <div class="ni" onclick="ft('Government',this)">🏛 Government</div>
+  <div class="ni" onclick="ft('Behavioral Health',this)">🧠 Behavioral Health</div>
+  <div class="nl">By Region</div>
+  <div class="ni" onclick="fr('East Valley',this)">📍 East Valley</div>
+  <div class="ni" onclick="fr('West Valley',this)">📍 West Valley</div>
+  <div class="ni" onclick="fr('North Valley',this)">📍 North Valley</div>
+  <div class="ni" onclick="fr('Scottsdale',this)">📍 Scottsdale</div>
+  <div class="ni" onclick="fr('Phoenix',this)">📍 Phoenix</div>
+  <div class="nl">Tools</div>
+  <div class="ni" id="nav-apollo" onclick="sv('apollo',this)">🔗 Apollo.io Guide</div>
+  <div class="ni" id="nav-scripts" onclick="sv('scripts',this)">📞 Call Scripts</div>
+  <div class="ni" id="nav-export" onclick="sv('export',this)">📤 HubSpot Export</div>
+</div>
+
+<div class="main">
+<div class="view on" id="view-contacts">
+  <div class="tb">
+    <h2 id="vtitle">All Contacts</h2>
+    <input class="srch" id="searchBox" type="search" placeholder="🔍 Search..." oninput="rt(this.value)">
+    <select class="sel" id="stageFilter" onchange="rt()">
+      <option value="">All stages</option>
+      <option>Lead</option><option>Contacted</option><option>Sample Delivered</option>
+      <option>Proposal Sent</option><option>First Order</option><option>Recurring</option>
+    </select>
+  </div>
+  <div class="tw">
+    <div class="th"><div></div><div>Company</div><div>Full Address</div><div>Phone</div><div>Type</div><div>Stage</div><div></div></div>
+    <div id="tbody"></div>
+  </div>
+</div>
+<div class="view" id="view-starred">
+  <div class="tb"><h2>Starred Contacts</h2></div>
+  <div class="tw">
+    <div class="th"><div></div><div>Company</div><div>Full Address</div><div>Phone</div><div>Type</div><div>Stage</div><div></div></div>
+    <div id="starbody"></div>
+  </div>
+</div>
+<div class="view" id="view-pipeline">
+  <div class="tb"><h2>Pipeline</h2></div>
+  <div class="pipeline" id="pipelineBoard"></div>
+</div>
+<div class="view" id="view-apollo">
+  <div class="tb"><h2>🔗 Apollo.io Integration Guide</h2></div>
+  <div class="apollo-card">
+    <h3>What Apollo does for Mesquite Catering</h3>
+    <p style="font-size:12px;color:var(--mu);line-height:1.7">This CRM has verified business phone numbers and addresses. Apollo.io finds the <b style="color:var(--acc2)">actual named person</b> at each business — the GM at a dealership, the HR Director at a hospital — with their direct email and sometimes direct dial. That's the difference between calling a main line and asking for someone vs. emailing a specific person by name.</p>
+  </div>
+  <div class="apollo-card">
+    <h3>Recommended: Basic Plan — $49/mo annual or $59/mo monthly</h3>
+    <div class="apollo-step"><div class="a-num">1</div><div class="a-txt">Go to <b>apollo.io</b> and create a free account. Sign up for <b>Basic plan</b> ($59/mo monthly, no commitment). You get <b>1,000 email credits</b> and <b>75 mobile credits</b> per month — enough to cover this entire list.</div></div>
+    <div class="apollo-step"><div class="a-num">2</div><div class="a-txt">In Apollo, go to <b>People Search</b>. Use these filters:<br>• <b>Job Title:</b> "Office Manager" OR "General Manager" OR "HR Director" OR "Events Coordinator"<br>• <b>Company Name:</b> Search each business from this CRM<br>• <b>Location:</b> Phoenix, AZ metro / Maricopa County</div></div>
+    <div class="apollo-step"><div class="a-num">3</div><div class="a-txt">For <b>dealerships</b>: search dealership name + "Office Manager" or "General Manager"<br>For <b>hospitals</b>: search hospital name + "HR Director" or "Human Resources"<br>For <b>corporate</b>: search company + "Office Manager" or "Facilities Manager"<br>For <b>hotels</b>: search hotel name + "Events Coordinator" or "Catering Manager"</div></div>
+    <div class="apollo-step"><div class="a-num">4</div><div class="a-txt"><b>Export from Apollo as CSV.</b> Then click <b>+ Add Contact</b> in this CRM and paste in the named person's info. Or click the ✏ edit button on existing contacts to add the person's name and direct email from Apollo on top of the main phone number already here.</div></div>
+    <div class="apollo-step"><div class="a-num">5</div><div class="a-txt"><b>Best Apollo searches for this list:</b><br><br>• "Office Manager" + "Earnhardt Toyota" + Arizona<br>• "HR Director" + "Banner Health" + Mesa AZ<br>• "Events Coordinator" + "Fairmont Scottsdale" + Arizona<br>• "HR Director" + "Mesa Public Schools" + Arizona<br>• "General Manager" + "AutoNation" + Tempe AZ<br><br><b>Pro tip:</b> Install Apollo's free Chrome extension. Then go to each dealership or hospital's LinkedIn page and Apollo shows you everyone who works there with their contact info — no searching needed.</div></div>
+  </div>
+  <div class="apollo-card">
+    <h3>ROI check</h3>
+    <p style="font-size:12px;color:var(--mu);line-height:1.7">$59/month for Apollo. One dealership locked in for weekly Friday lunch (25 people × $14/person = $350/week = <b style="color:var(--acc2)">$1,400/month recurring</b>). Apollo pays for itself in the first 2 hours of that first account. Do one month, export all contacts, cancel if you want — or keep it to keep finding new leads.</p>
+  </div>
+</div>
+<div class="view" id="view-scripts">
+  <div class="tb"><h2>Call Scripts</h2></div>
+  <div class="sc-wrap">
+    <div class="sc"><h3>🚗 Dealerships</h3>
+      <div class="sc-box">"Hi, calling from Mesquite restaurant in Mesa. Can I speak with your office manager or whoever handles catering for the team?
+
+[Connected:]
+Hi [name], I'm with Mesquite — we do corporate catering for dealerships: weekly lunch programs, customer appreciation events, staff meetings. We'd love to drop a complimentary sample tray by this week, no cost. Would [day] or [day] work?"</div>
+      <button class="btn" style="font-size:11px;margin-top:7px" onclick="copy(0)">Copy Script</button></div>
+    <div class="sc"><h3>🏥 Hospitals &amp; Healthcare</h3>
+      <div class="sc-box">"Hi, calling from Mesquite restaurant in Mesa. Can I be connected to HR or whoever handles staff events and catering?
+
+[Connected:]
+Hi [name], I'm with Mesquite — we cater for healthcare teams: staff appreciation events, department lunches, nurse appreciation week. We'd love to drop a free sample tray. Would this week or next work?"</div>
+      <button class="btn" style="font-size:11px;margin-top:7px" onclick="copy(1)">Copy Script</button></div>
+    <div class="sc"><h3>🏫 School Districts</h3>
+      <div class="sc-box">"Hi, calling from Mesquite restaurant in Mesa. Can I speak with whoever handles catering for staff events — usually HR or facilities?
+
+[Connected:]
+Hi [name], I'm with Mesquite — we do catering for district staff events, back-to-school luncheons, teacher appreciation days, and board meetings. We'd love to bring a complimentary sample tray. Would [day] or [day] work?"</div>
+      <button class="btn" style="font-size:11px;margin-top:7px" onclick="copy(2)">Copy Script</button></div>
+    <div class="sc"><h3>🏢 Corporate Offices</h3>
+      <div class="sc-box">"Hi, calling from Mesquite restaurant. Could I speak with your office manager or whoever handles team catering?
+
+[Connected:]
+Hi [name], I'm with Mesquite — we provide catering for corporate teams: weekly lunches, all-hands events, client appreciation. We'd love to drop a complimentary sample tray by. Would [day] or [day] work?"</div>
+      <button class="btn" style="font-size:11px;margin-top:7px" onclick="copy(3)">Copy Script</button></div>
+    <div class="sc"><h3>🏨 Hotels &amp; Resorts</h3>
+      <div class="sc-box">"Hi, calling from Mesquite restaurant in Mesa. Could I speak with your food &amp; beverage manager or events coordinator?
+
+[Connected:]
+Hi [name], I'm with Mesquite — we do off-site catering and partner with hotels when clients need local options. I'd love to establish a referral relationship and drop off a sample menu."</div>
+      <button class="btn" style="font-size:11px;margin-top:7px" onclick="copy(4)">Copy Script</button></div>
+    <div class="sc"><h3>📧 Email Template</h3>
+      <div class="sc-box">Subject: Complimentary catering sample for [Organization]
+
+Hi [Name],
+
+I'm reaching out from Mesquite, a local restaurant in Mesa specializing in corporate catering across the Phoenix metro. We work with dealerships, hospitals, school districts, and corporate offices on everything from weekly team lunches to large events.
+
+I'd love to drop off a complimentary sample tray — no cost, no commitment.
+
+Would [day] or [day] work?
+
+[Your name]
+Mesquite Restaurant | Mesa, AZ | [phone]</div>
+      <button class="btn" style="font-size:11px;margin-top:7px" onclick="copy(5)">Copy Email</button></div>
+  </div>
+</div>
+<div class="view" id="view-export">
+  <div class="tb"><h2>Export to HubSpot</h2></div>
+  <div class="ec">
+    <h3>HubSpot CSV Import</h3>
+    <p>Downloads all contacts pre-formatted for HubSpot's importer. Address field is now included.</p>
+    <div class="cpre" id="expPrev">Loading...</div>
+    <button class="btn a" onclick="doExp()">⬇ Download HubSpot CSV</button>
+  </div>
+</div>
+<div class="view" id="view-detail">
+  <div class="tb">
+    <button class="btn" onclick="sv('contacts')">← Back</button>
+    <h2 id="detTitle"></h2>
+    <button class="btn" onclick="oec()">Edit</button>
+  </div>
+  <div class="det-grid" id="detFields"></div>
+  <div class="nb">
+    <div style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px">Notes</div>
+    <div id="detNotes" style="font-size:13px;line-height:1.6"></div>
+    <div class="stgb" id="stageBtns"></div>
+  </div>
+</div>
+</div>
+</div>
+
+<div class="ov" id="modalOv">
+<div class="mod">
+  <div class="mhd"><h3 id="modalTitle">Add Contact</h3><button class="mx" onclick="cm()">&#215;</button></div>
+  <div class="mb">
+    <div class="fr"><div class="fg"><label class="fl">First Name</label><input class="fi" id="fFN" placeholder="Mike"></div><div class="fg"><label class="fl">Last Name</label><input class="fi" id="fLN" placeholder="Johnson"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Company *</label><input class="fi" id="fCo" placeholder="Earnhardt Ford"></div><div class="fg"><label class="fl">Title / Ask For</label><input class="fi" id="fTi" placeholder="Office Manager"></div></div>
+    <div class="fr f"><div class="fg"><label class="fl">Full Address</label><input class="fi" id="fAd" placeholder="1234 E Main St, Mesa AZ 85201"></div></div>
+    <div class="fr"><div class="fg"><label class="fl">Phone</label><input class="fi" id="fPh" placeholder="(480) 555-0100"></div><div class="fg"><label class="fl">Email</label><input class="fi" id="fEm" placeholder="info@company.com"></div></div>
+    <div class="fr">
+      <div class="fg"><label class="fl">Type *</label><select class="fi" id="fTy"><option>Dealership</option><option>Hospital</option><option>Corporate</option><option>School District</option><option>Hotel/Resort</option><option>Government</option><option>Behavioral Health</option></select></div>
+      <div class="fg"><label class="fl">Region</label><select class="fi" id="fRg"><option>East Valley</option><option>West Valley</option><option>North Valley</option><option>Scottsdale</option><option>Phoenix</option></select></div>
+    </div>
+    <div class="fr"><div class="fg"><label class="fl">Stage</label><select class="fi" id="fSt"><option>Lead</option><option>Contacted</option><option>Sample Delivered</option><option>Proposal Sent</option><option>First Order</option><option>Recurring</option></select></div><div class="fg"><label class="fl">Follow-Up</label><input class="fi" id="fFU" type="date"></div></div>
+    <div class="fr f"><div class="fg"><label class="fl">Notes</label><textarea class="fi" id="fNo" rows="3" style="resize:vertical"></textarea></div></div>
+  </div>
+  <div class="mft"><button class="btn" onclick="cm()">Cancel</button><button class="btn a" onclick="sc2()">Save Contact</button></div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SHS={Lead:'subscriber',Contacted:'lead','Sample Delivered':'marketingqualifiedlead','Proposal Sent':'salesqualifiedlead','First Order':'customer',Recurring:'evangelist'};
+const STAGES=['Lead','Contacted','Sample Delivered','Proposal Sent','First Order','Recurring'];
+const TC={Dealership:'pD',Hospital:'pH',Corporate:'pC','School District':'pS','Hotel/Resort':'pH2',Government:'pGv','Behavioral Health':'pBh'};
+const TI={Dealership:'&#x1F697;',Hospital:'&#x1F3E5;',Corporate:'&#x1F3E2;','School District':'&#x1F3EB;','Hotel/Resort':'&#x1F3E8;',Government:'&#x1F3DB;','Behavioral Health':'&#x1F9E0;'};
+const SCRPTS=[
+`Hi, calling from Mesquite restaurant in Mesa. Can I speak with your office manager or whoever handles catering for the team?
+
+[Connected:]
+Hi [name], I am with Mesquite. We do corporate catering for dealerships: weekly lunch programs, customer appreciation events. We would love to drop a complimentary sample tray this week, no cost. Would [day] or [day] work?`,
+`Hi, calling from Mesquite restaurant in Mesa. Can I be connected to HR or whoever handles staff events and catering?
+
+[Connected:]
+Hi [name], I am with Mesquite. We cater for healthcare teams: staff appreciation, department lunches, nurse appreciation week. Free sample tray for your team. Would this week or next work?`,
+`Hi, calling from Mesquite restaurant. Can I speak with whoever handles catering for staff events, HR or facilities?
+
+[Connected:]
+Hi [name], I am with Mesquite. We do catering for district staff events, back-to-school luncheons, teacher appreciation days, and board meetings. We would love to bring a complimentary sample tray. Would [day] or [day] work?`,
+`Hi, calling from Mesquite restaurant. Could I speak with your office manager or whoever handles team catering?
+
+[Connected:]
+Hi [name], I am with Mesquite. We provide catering for corporate teams: weekly lunches, all-hands events, client appreciation. Complimentary sample tray. Would [day] or [day] work?`,
+`Hi, calling from Mesquite restaurant. Could I speak with your food and beverage manager or events coordinator?
+
+[Connected:]
+Hi [name], I am with Mesquite. We do off-site catering and partner with hotels when clients need local catering options. I would love to establish a referral relationship and drop off a sample menu.`,
+`Subject: Complimentary catering sample for [Organization]
+
+Hi [Name],
+
+I am reaching out from Mesquite, a local restaurant in Mesa specializing in corporate catering across the Phoenix metro.
+
+I would love to drop off a complimentary sample tray for your team. No cost, no commitment.
+
+Would [day] or [day] work?
+
+[Your name]
+Mesquite Restaurant | Mesa, AZ | [phone]`
+];
+let contacts=[],editId=null,typeF=null,regionF=null;
+const SEED=[
+['Dealership','East Valley','Earnhardt Toyota Mesa','6136 E Auto Loop Ave, Mesa AZ 85206','(480) 807-9700','info@earnhardttoyota.com','Office Manager','Earnhardt group. Pitch weekly Friday lunch.',true],
+['Dealership','East Valley','Big Two Toyota Chandler','1250 S Gilbert Rd, Chandler AZ 85286','(480) 898-6000','','Office Manager','High-volume Toyota in Chandler.',true],
+['Dealership','East Valley','AutoNation Toyota Tempe','7970 S Autoplex Loop, Tempe AZ 85284','(480) 420-3425','','Office Manager','AutoNation group.',false],
+['Dealership','Scottsdale','Right Toyota Scottsdale','7701 E Frank Lloyd Wright Blvd, Scottsdale AZ 85260','(480) 778-2200','','Office Manager','Scottsdale Toyota.',false],
+['Dealership','West Valley','Peoria Toyota','8633 W Bell Rd, Peoria AZ 85382','(623) 876-3400','','Office Manager','West Valley Toyota.',false],
+['Dealership','Phoenix','Camelback Toyota','1550 E Camelback Rd, Phoenix AZ 85014','(602) 264-2841','','Office Manager','Central Phoenix Toyota.',false],
+['Dealership','West Valley','Toyota of Surprise','13617 W Bell Rd, Surprise AZ 85374','(623) 977-1234','','Office Manager','West Valley Toyota.',false],
+['Dealership','East Valley','Larry H. Miller Toyota Mesa','2020 W Riverview Auto Dr, Mesa AZ 85201','(480) 655-4400','','Office Manager','LHM group.',false],
+['Dealership','North Valley','Bell Road Toyota Phoenix','2020 W Bell Rd, Phoenix AZ 85023','(602) 978-2000','','Office Manager','North Phoenix Toyota.',false],
+['Dealership','East Valley','Honda of Superstition Springs','6229 E Auto Park Dr, Mesa AZ 85206','(480) 355-6900','','Office Manager','Largest Honda East Valley.',true],
+['Dealership','East Valley','Tempe Honda','8030 S Autoplex Loop, Tempe AZ 85284','(480) 421-4800','','Office Manager','Penske Automotive Group.',false],
+['Dealership','West Valley','Arrowhead Honda Peoria','8380 W Bell Rd, Peoria AZ 85382','(623) 815-2080','','Office Manager','West Valley Honda.',false],
+['Dealership','Phoenix','Bell Honda Phoenix','701 W Bell Rd, Phoenix AZ 85023','(602) 298-2004','','Office Manager','North Phoenix Honda.',false],
+['Dealership','Phoenix','Showcase Honda Phoenix','1500 E Camelback Rd, Phoenix AZ 85014','(602) 241-1515','','Office Manager','Central Phoenix Honda.',false],
+['Dealership','Scottsdale','Right Honda Scottsdale','7875 E Frank Lloyd Wright Blvd, Scottsdale AZ 85260','(480) 778-2440','','Office Manager','Scottsdale Honda.',false],
+['Dealership','West Valley','Earnhardt Honda Avondale','10151 W Papago Fwy, Avondale AZ 85323','(623) 463-4456','','Office Manager','Earnhardt group.',false],
+['Dealership','East Valley','Chapman Chevrolet Tempe','1717 E Baseline Rd, Tempe AZ 85283','(480) 838-1234','','Office Manager — GM: Chace Gibbs','GM: Chace Gibbs. 50yr community dealer.',true],
+['Dealership','East Valley','AutoNation Chevrolet Mesa','1600 S Gilbert Rd, Mesa AZ 85204','(480) 304-7640','','General Manager','Large AutoNation store.',false],
+['Dealership','East Valley','AutoNation Chevrolet Gilbert','780 S Gilbert Rd, Gilbert AZ 85296','(480) 359-2264','','Office Manager','AutoNation group.',false],
+['Dealership','West Valley','Sands Chevrolet Surprise','19003 N Reems Rd, Surprise AZ 85388','(623) 977-1800','','Office Manager','Popular West Valley Chevy.',false],
+['Dealership','Phoenix','Courtesy Chevrolet Phoenix','1233 E Camelback Rd, Phoenix AZ 85014','(602) 252-2495','','Office Manager','One of largest Chevy dealers in AZ.',false],
+['Dealership','East Valley','Earnhardt Ford Chandler','7300 W Orchid Ln, Chandler AZ 85226','(480) 893-0000','info@earnhardtford.com','Office Manager','Earnhardt group.',false],
+['Dealership','East Valley','San Tan Ford Gilbert','1050 E Motorplex Loop, Gilbert AZ 85297','(480) 786-0555','','Office Manager','Large Ford SE Valley.',false],
+['Dealership','West Valley','Surprise Ford','16825 W Waddell Rd, Surprise AZ 85388','(623) 792-2522','','Office Manager','Verified Yelp.',false],
+['Dealership','West Valley','Peoria Ford','9130 W Bell Rd, Peoria AZ 85382','(844) 877-9033','','Office Manager','High-volume Ford.',false],
+['Dealership','West Valley','Larry H. Miller CDJR Surprise','16900 N Dysart Rd, Surprise AZ 85374','(623) 977-5000','','Office Manager','LHM group.',false],
+['Dealership','East Valley','Larry H. Miller Nissan Mesa','2025 W Riverview Auto Dr, Mesa AZ 85201','(602) 814-0106','','Office Manager','LHM group.',false],
+['Dealership','East Valley','Courtesy Nissan of Mesa','1550 S Gilbert Rd, Mesa AZ 85204','(480) 969-3400','','Office Manager','Mesa Nissan.',false],
+['Dealership','East Valley','AutoNation Nissan Chandler','1350 S Gilbert Rd, Chandler AZ 85286','(480) 545-3600','','Office Manager','AutoNation group.',false],
+['Dealership','West Valley','Peoria Nissan','9151 W Bell Rd, Peoria AZ 85382','(844) 872-4555','','Office Manager','West Valley Nissan.',false],
+['Dealership','West Valley','Avondale Nissan','10305 W Papago Fwy, Avondale AZ 85323','(623) 907-3300','','Office Manager','West Valley.',false],
+['Dealership','Scottsdale','Airpark Dodge Chrysler Jeep','7801 E Frank Lloyd Wright Blvd, Scottsdale AZ 85260','(480) 696-5885','','Office Manager','Verified Yelp.',true],
+['Dealership','East Valley','Subaru Superstore Chandler','1050 S Gilbert Rd, Chandler AZ 85286','(480) 222-6000','','Office Manager','Verified Yelp.',false],
+['Dealership','East Valley','Horne Kia Gilbert','1465 E Motorplex Loop, Gilbert AZ 85297','(888) 890-3116','','Office Manager','Horne Auto Group.',false],
+['Dealership','East Valley','Courtesy Kia Mesa','6130 E Auto Park Dr, Mesa AZ 85206','(480) 573-0915','','Office Manager','East Valley Kia.',false],
+['Dealership','East Valley','Earnhardt Hyundai San Tan','3481 S Market St, Gilbert AZ 85297','(833) 398-0362','','Office Manager','Earnhardt group.',false],
+['Dealership','East Valley','Mercedes-Benz of Chandler','7450 W Orchid Ln, Chandler AZ 85226','(844) 211-5748','','Office Manager','Luxury. Verified.',false],
+['Dealership','Scottsdale','Mercedes-Benz of Scottsdale','4725 N Scottsdale Rd, Scottsdale AZ 85251','(480) 947-5000','','Office Manager','Verified.',false],
+['Dealership','Scottsdale','Mercedes-Benz North Scottsdale','18018 N Scottsdale Rd, Phoenix AZ 85054','(480) 515-5000','','Office Manager','Penske Automotive.',false],
+['Dealership','Scottsdale','Bell Lexus North Scottsdale','18555 N Scottsdale Rd, Scottsdale AZ 85255','(480) 566-6788','','Office Manager','Luxury Lexus.',false],
+['Dealership','Scottsdale','BMW North Scottsdale','18018 N Scottsdale Rd, Phoenix AZ 85054','(480) 515-5200','','Office Manager','Luxury BMW.',false],
+['Dealership','West Valley','Arrowhead BMW Glendale','19250 N Loop 101, Glendale AZ 85308','(623) 500-0800','','Office Manager','West Valley BMW.',false],
+['Dealership','East Valley','Earnhardt Ford Queen Creek','35747 N Ellsworth Rd, Queen Creek AZ 85142','(480) 550-3800','','Office Manager','Earnhardt group.',false],
+['Dealership','West Valley','Earnhardt Kia Peoria','17431 N 91st Ave, Peoria AZ 85382','(623) 933-6900','','Office Manager','Earnhardt group.',false],
+['Dealership','West Valley','Earnhardt Goodyear','13680 W Test Dr, Goodyear AZ 85338','(623) 298-3900','','Office Manager','Earnhardt group.',false],
+['Dealership','Scottsdale','Earnhardt Scottsdale Hyundai','15345 N Scottsdale Rd, Scottsdale AZ 85254','(480) 429-2400','','Office Manager','Earnhardt group.',false],
+['Hospital','East Valley','Banner Desert Medical Center','1400 S Dobson Rd, Mesa AZ 85202','(480) 412-3000','','HR Director','Largest in Mesa. Get on approved vendor list.',true],
+['Hospital','East Valley','Banner Heart Hospital','6750 E Baywood Ave, Mesa AZ 85206','(480) 854-5000','','HR Coordinator','East Mesa.',false],
+['Hospital','East Valley','Banner Baywood Medical Center','6644 E Baywood Ave, Mesa AZ 85206','(480) 321-2000','','HR Coordinator','342-bed hospital. Verified.',false],
+['Hospital','East Valley','Banner Gateway Medical Center','1900 N Higley Rd, Gilbert AZ 85234','(480) 543-2000','','HR Coordinator','Gilbert. Magnet-status.',true],
+['Hospital','East Valley','Banner MD Anderson Cancer Center','2946 E Banner Gateway Dr, Gilbert AZ 85234','(480) 256-6444','','HR Coordinator','Gilbert. Large staff.',false],
+['Hospital','East Valley','Banner Ironwood Medical Center','37000 N Gantzel Rd, San Tan Valley AZ 85140','(480) 394-4000','','HR Coordinator','San Tan Valley / Queen Creek.',false],
+['Hospital','East Valley','Banner Ocotillo Medical Center','1405 S Alma School Rd, Chandler AZ 85286','(480) 256-7000','','HR Coordinator','CORRECTED address & phone. Chandler.',true],
+['Hospital','East Valley','Cardon Childrens Medical Center','1400 S Dobson Rd, Mesa AZ 85202','(480) 412-5437','','HR Coordinator','On Banner Desert campus.',false],
+['Hospital','East Valley','Dignity Health Chandler Regional','1955 W Frye Rd, Chandler AZ 85224','(480) 728-3000','','HR Director','Verified address & phone.',true],
+['Hospital','East Valley','Dignity Health Mercy Gilbert','3555 S Val Vista Dr, Gilbert AZ 85297','(480) 728-8000','','HR Coordinator','Verified. Nurse appreciation week in May.',true],
+['Hospital','East Valley','Dignity Health AZ General Mesa','7 W Brown Rd, Mesa AZ 85201','(480) 410-4500','','HR Coordinator','Mesa location.',false],
+['Hospital','West Valley','Dignity Health AZ General Goodyear','251 N Estrella Pkwy, Goodyear AZ 85338','(623) 322-6900','','HR Coordinator','Verified.',false],
+['Hospital','West Valley','Dignity Health AZ General Laveen','5601 S 59th Ave, Laveen AZ 85339','(623) 584-5100','','HR Coordinator','Laveen area.',false],
+['Hospital','Phoenix','Dignity Health St Josephs Hospital','350 W Thomas Rd, Phoenix AZ 85013','(602) 406-3000','','HR Coordinator','Large flagship.',false],
+['Hospital','Scottsdale','HonorHealth Scottsdale Shea','9003 E Shea Blvd, Scottsdale AZ 85260','(480) 323-3000','','HR Coordinator','427 beds.',false],
+['Hospital','Scottsdale','HonorHealth Scottsdale Osborn','7400 E Osborn Rd, Scottsdale AZ 85251','(480) 882-4000','','HR Coordinator','Scottsdale.',false],
+['Hospital','Scottsdale','HonorHealth Scottsdale Thompson Peak','7400 E Thompson Peak Pkwy, Scottsdale AZ 85255','(480) 324-7000','','HR Coordinator','N Scottsdale.',false],
+['Hospital','East Valley','HonorHealth Tempe Medical Center','1500 S Mill Ave, Tempe AZ 85281','(480) 583-0352','','HR Coordinator','Mill Ave Tempe.',false],
+['Hospital','East Valley','HonorHealth Four Peaks Medical Center','1301 S Crismon Rd, Mesa AZ 85209','(480) 358-6086','','HR Coordinator','East Mesa.',false],
+['Hospital','Phoenix','HonorHealth John C Lincoln','250 E Dunlap Ave, Phoenix AZ 85020','(602) 943-2381','','HR Coordinator','N Central Phoenix.',false],
+['Hospital','North Valley','HonorHealth Deer Valley','19829 N 27th Ave, Phoenix AZ 85027','(623) 879-6100','','HR Coordinator','N Phoenix.',false],
+['Hospital','North Valley','HonorHealth Sonoran Crossing','33400 N 32nd Ave, Phoenix AZ 85085','(623) 683-5012','','HR Coordinator','Anthem / N Phoenix.',false],
+['Hospital','Scottsdale','Mayo Clinic Arizona','5777 E Mayo Blvd, Phoenix AZ 85054','(480) 301-8000','','Events Coordinator','World-class. Ask for HR or Events.',true],
+['Hospital','Phoenix','Valleywise Health Medical Center','2601 E Roosevelt St, Phoenix AZ 85008','(602) 344-5011','','Food Services Manager','Verified address & phone.',true],
+['Hospital','West Valley','Dignity Health St Josephs Westgate','7350 N Zanjero Blvd, Glendale AZ 85305','(623) 334-4000','','HR Coordinator','West Valley inpatient.',false],
+['Behavioral Health','Phoenix','Terros Health Main Line','3864 N 27th Ave, Phoenix AZ 85017','(602) 685-6000','info@terroshealth.org','HR Director','55+ yrs behavioral health. Large staff.',true],
+['Behavioral Health','Phoenix','Copa Health Metro Center','10217 N Metro Pkwy W, Phoenix AZ 85051','(602) 997-9006','','HR Director','Large behavioral health nonprofit.',true],
+['Behavioral Health','West Valley','Copa Health West Valley Campus','14100 N 83rd Ave Ste 100, Peoria AZ 85381','(623) 583-0232','','HR Coordinator','Peoria campus.',false],
+['Behavioral Health','West Valley','Copa Health Arrowhead Campus','5625 W Bell Rd, Glendale AZ 85308','(602) 239-4100','','HR Coordinator','Glendale campus.',false],
+['Behavioral Health','East Valley','Copa Health Gateway Campus Gilbert','5222 E Baseline Rd, Gilbert AZ 85234','(480) 659-0202','','HR Coordinator','Gilbert. Has Gateway Grille on-site.',true],
+['Behavioral Health','Phoenix','Southwest Behavioral & Health Services','11221 N 28th Dr, Phoenix AZ 85029','(602) 942-0970','','HR Director','Large behavioral health across Phoenix metro.',true],
+['Behavioral Health','Phoenix','Connections Health Solutions','7006 E Thomas Rd, Scottsdale AZ 85251','(602) 222-9444','','HR Coordinator','Large behavioral health system.',false],
+['Behavioral Health','East Valley','Valleywise Behavioral Health Gilbert','1447 W Elliot Rd Ste 103, Gilbert AZ 85233','(480) 784-1500','','HR Coordinator','East Valley campus.',false],
+['Corporate','East Valley','GoDaddy Tempe HQ','2155 E GoDaddy Way, Tempe AZ 85284','(480) 505-8877','','Events Coordinator','VERIFIED: (480) 505-8877. 5000-10000 employees.',true],
+['Corporate','East Valley','Insight Enterprises Chandler HQ','2701 E Insight Way, Chandler AZ 85286','(480) 333-3000','','Office Manager','Fortune 500.',true],
+['Corporate','East Valley','Microchip Technology Chandler','2355 W Chandler Blvd, Chandler AZ 85224','(480) 792-7200','','Office Manager','Large semiconductor campus.',false],
+['Corporate','East Valley','Keap Chandler HQ','1260 S Spectrum Blvd, Chandler AZ 85286','(866) 800-0004','','Office Manager','~500 employees.',false],
+['Corporate','Scottsdale','SkySong Innovation Center','1475 N Scottsdale Rd, Scottsdale AZ 85257','(480) 884-1600','','Events Coordinator','Monthly events, multiple tech tenants.',true],
+['Corporate','East Valley','DriveTime Automotive Tempe HQ','1515 E Chandler Blvd, Phoenix AZ 85048','(888) 418-1212','','Office Manager','Large auto finance company.',false],
+['Corporate','Phoenix','PetSmart HQ Phoenix','19601 N 27th Ave, Phoenix AZ 85027','(623) 587-2100','','Office Manager','Largest AZ employer.',false],
+['Corporate','Phoenix','Republic Services HQ','18500 N Allied Way, Phoenix AZ 85054','(480) 627-2700','','Office Manager','Large corporate campus.',false],
+['Corporate','Scottsdale','Discount Tire HQ','20225 N Scottsdale Rd, Scottsdale AZ 85255','(480) 606-6000','','Office Manager','Fortune 500 private. Large staff.',true],
+['Corporate','East Valley','Crescent Crown Distributing Mesa','2000 E Rio Salado Pkwy, Mesa AZ 85209','(480) 835-6200','','Office Manager','Large distribution.',false],
+['Corporate','West Valley','Lockheed Martin Goodyear','5000 E McDowell Rd, Goodyear AZ 85338','(623) 925-1000','','Office Manager','Aerospace facility.',false],
+['Corporate','West Valley','Amazon Fulfillment Goodyear','6835 W Buckeye Rd, Phoenix AZ 85043','(623) 547-0500','','HR Manager','Large distribution center.',false],
+['Corporate','West Valley','State Farm Stadium','1 Cardinals Dr, Glendale AZ 85305','(623) 433-7101','','Events Coordinator','Large events facility.',false],
+['Corporate','East Valley','ASU Tempe Campus','1151 S Forest Ave, Tempe AZ 85281','(480) 965-9010','sundevilcatering@asu.edu','Facilities Manager','Large university employer.',false],
+['Corporate','Phoenix','Hensley Beverage Company','4201 N 41st St, Phoenix AZ 85018','(602) 269-9300','','Office Manager','Large Phoenix distribution.',false],
+['Corporate','West Valley','Westgate Entertainment District','6751 N Sunset Blvd, Glendale AZ 85305','(623) 385-7502','','Events Manager','Ask for Events or Office Manager.',false],
+['Corporate','Phoenix','ON Semiconductor Phoenix HQ','5005 E McDowell Rd, Phoenix AZ 85008','(602) 244-6600','','Office Manager','Large semiconductor company.',false],
+['Corporate','Phoenix','Grand Canyon University','3300 W Camelback Rd, Phoenix AZ 85017','(855) 428-5673','','Office Manager','Large campus employer.',false],
+['Corporate','Phoenix','U-Haul International HQ','2727 N Central Ave, Phoenix AZ 85004','(602) 263-6011','','Office Manager','Large admin staff.',false],
+['School District','East Valley','Mesa Public Schools','63 E Main St, Mesa AZ 85201','(480) 472-0200','','HR Director','Largest AZ district — 7200+ staff.',true],
+['School District','East Valley','Gilbert Public Schools','140 S Gilbert Rd, Gilbert AZ 85296','(480) 497-3000','','HR Coordinator','A-rated district.',true],
+['School District','East Valley','Chandler Unified School District','1525 W Frye Rd, Chandler AZ 85224','(480) 812-7000','','HR Director','4700+ staff.',true],
+['School District','East Valley','Tempe Union High School District','500 W Guadalupe Rd, Tempe AZ 85283','(480) 839-0292','','HR Coordinator','6 high schools.',false],
+['School District','Scottsdale','Scottsdale Unified School District','7575 E Main St, Scottsdale AZ 85251','(480) 484-6200','','HR Director','3000 employees.',false],
+['School District','West Valley','Peoria Unified School District','6330 W Thunderbird Rd, Glendale AZ 85306','(623) 486-6000','','HR Director','3500+ staff.',true],
+['School District','East Valley','Queen Creek Unified School District','20217 E Chandler Heights Rd, Queen Creek AZ 85142','(480) 987-5935','','HR Coordinator','Growing district.',false],
+['School District','West Valley','Dysart Unified School District','15802 N Parkview Pl, Surprise AZ 85374','(623) 876-7000','','HR Coordinator','Surprise, El Mirage, Youngtown.',false],
+['School District','West Valley','Buckeye Union High School District','902 E Eason Ave, Buckeye AZ 85326','(623) 386-2012','','HR Coordinator','West Valley.',false],
+['School District','East Valley','Kyrene School District','8700 S Kyrene Rd, Tempe AZ 85284','(480) 783-4000','','HR Coordinator','Tempe, Chandler, Ahwatukee.',false],
+['School District','East Valley','Higley Unified School District','2935 S Recker Rd, Gilbert AZ 85295','(480) 279-7000','','HR Coordinator','Growing East Valley district.',false],
+['School District','North Valley','Deer Valley Unified School District','20402 N 15th Ave, Phoenix AZ 85027','(623) 445-5000','','HR Coordinator','Large N Phoenix district.',false],
+['School District','West Valley','Glendale Union High School District','7650 N 43rd Ave, Glendale AZ 85301','(623) 435-6000','','HR Coordinator','10 high schools.',false],
+['School District','West Valley','Tolleson Union High School District','9801 W Van Buren St, Tolleson AZ 85353','(623) 478-4000','','HR Coordinator','West Valley.',false],
+['School District','North Valley','Cave Creek Unified School District','33016 N 60th St, Scottsdale AZ 85266','(480) 575-2000','','HR Coordinator','Cave Creek, Carefree, N Scottsdale.',false],
+['School District','East Valley','Apache Junction Unified School District','1060 N Idaho Rd, Apache Junction AZ 85119','(480) 982-1110','','HR Coordinator','East Valley.',false],
+['School District','West Valley','Litchfield Elementary School District','759 W Wigwam Blvd, Litchfield Park AZ 85340','(623) 535-6000','','HR Coordinator','West Valley.',false],
+['School District','East Valley','Combs Unified School District','43908 N Gantzel Rd, San Tan Valley AZ 85140','(480) 987-5000','','HR Coordinator','San Tan Valley / Queen Creek.',false],
+['Hotel/Resort','Scottsdale','Fairmont Scottsdale Princess','7575 E Princess Dr, Scottsdale AZ 85255','(480) 585-4848','','Catering/Events Manager','316000 sqft event space.',true],
+['Hotel/Resort','Scottsdale','Talking Stick Resort','9800 E Indian Bend Rd, Scottsdale AZ 85256','(480) 850-8747','meetinginfo@talkingstickresort.com','Catering Sales Manager','100000 sqft events. Email verified.',true],
+['Hotel/Resort','Scottsdale','Westin Kierland Resort','6902 E Greenway Pkwy, Scottsdale AZ 85254','(480) 624-1202','','Events Coordinator','Large resort.',false],
+['Hotel/Resort','Scottsdale','Hyatt Regency Scottsdale Gainey Ranch','7500 E Doubletree Ranch Rd, Scottsdale AZ 85258','(480) 444-1234','','Events Coordinator','Large Hyatt property.',false],
+['Hotel/Resort','Scottsdale','The Phoenician','6000 E Camelback Rd, Scottsdale AZ 85251','(480) 941-8200','','Events Coordinator','Luxury resort.',false],
+['Hotel/Resort','Scottsdale','JW Marriott Scottsdale Camelback Inn','5402 E Lincoln Dr, Scottsdale AZ 85253','(480) 948-1700','','Events Coordinator','Large Marriott conference resort.',false],
+['Hotel/Resort','Scottsdale','Caesars Republic Scottsdale','6852 E Main St, Scottsdale AZ 85251','(480) 607-2222','','Events Coordinator','New 2024 luxury hotel.',false],
+['Hotel/Resort','East Valley','Sheraton Grand Wild Horse Pass','5594 W Wild Horse Pass Blvd, Chandler AZ 85226','(602) 225-0100','','Events Coordinator','Gila River resort.',false],
+['Hotel/Resort','East Valley','Hilton Phoenix Chandler','2929 W Frye Rd, Chandler AZ 85224','(480) 899-7400','','F&B Manager','Corporate hotel.',false],
+['Hotel/Resort','East Valley','Marriott Tempe at The Buttes','2000 W Westcourt Way, Tempe AZ 85282','(602) 225-9000','','Events Coordinator','Popular corporate event hotel.',false],
+['Hotel/Resort','East Valley','Crowne Plaza San Marcos Chandler','1 San Marcos Pl, Chandler AZ 85225','(480) 812-0900','','F&B Manager','Historic hotel.',false],
+['Hotel/Resort','East Valley','Courtyard Marriott Mesa','1221 S Westwood, Mesa AZ 85210','(480) 461-0650','','Events Coordinator','Local to Mesquite.',true],
+['Hotel/Resort','West Valley','Renaissance Glendale Hotel','9495 W Coyotes Blvd, Glendale AZ 85305','(623) 937-3700','','Events Coordinator','Westgate area.',false],
+['Hotel/Resort','West Valley','Wigwam Resort Litchfield Park','300 E Wigwam Blvd, Litchfield Park AZ 85340','(623) 935-3811','','Events Coordinator','Historic Arizona resort.',false],
+['Hotel/Resort','Scottsdale','Embassy Suites Scottsdale','5001 N Scottsdale Rd, Scottsdale AZ 85250','(480) 941-3400','','Events Coordinator','Large all-suite hotel.',false],
+['Hotel/Resort','East Valley','Hampton Inn Suites Phoenix Tempe','1415 N Scottsdale Rd, Tempe AZ 85281','(480) 941-3441','','F&B Manager','Near ASU.',false],
+['Hotel/Resort','Scottsdale','Omni Scottsdale Montelucia','4949 E Lincoln Dr, Paradise Valley AZ 85253','(480) 627-3200','','Events Coordinator','Paradise Valley.',false],
+['Hotel/Resort','Scottsdale','Hilton Garden Inn Scottsdale Old Town','7324 E Indian School Rd, Scottsdale AZ 85251','(480) 481-0400','','Events Coordinator','Old Town location.',false],
+// ── TOLLESON / AVONDALE OUTREACH ──────────────────────────────────────
+['Corporate','West Valley','FedEx by Mesquite','Tolleson/Avondale area AZ','(623) 643-9873','bianca.miller@fedex.com','Bianca Miller','Catered with us when we first opened and LOVED it — returning customer',true],
+['Hospital','West Valley','Gateway Dental Avondale','Tolleson/Avondale area AZ','(623) 907-4562','avondalegatewaydental@smilegeneration.com','Christopher','Open to catering',false],
+['Corporate','West Valley','Massage Envy Tolleson','Tolleson/Avondale area AZ','(623) 209-3939','clinico336@massageenvy.com','Manager','Always looking for catering options',false],
+['Corporate','West Valley','Empire Beauty School','Tolleson/Avondale area AZ','(623) 907-9499','karchie@empire.edu','K. Archie','Open to catering',false],
+['Corporate','West Valley','Best Buy Tolleson','Tolleson/Avondale area AZ','(623) 474-7150','ethan.schaefer@bestbuy.com','Ethan Schaefer','Would love to cater',true],
+['Corporate','West Valley','Davids Bridal Tolleson','Tolleson/Avondale area AZ','(480) 426-8248','jayleerosell@gmail.com','Jaylee Rosell','Interested in catering',false],
+['Corporate','West Valley','Hobby Lobby Tolleson','Tolleson/Avondale area AZ','(623) 643-9226','','JD','Caters for holidays',false],
+['Corporate','West Valley','Boot Barn Tolleson','Tolleson/Avondale area AZ','(623) 936-3126','','Manager','Caters rarely',false],
+['Corporate','West Valley','Sportsman Warehouse Tolleson','Tolleson/Avondale area AZ','(623) 745-0700','','Manager','Caters sometimes',false],
+['Hospital','West Valley','Medical Plaza Tolleson','Tolleson/Avondale area AZ','(623) 433-0110','','Manager','Does group orders',false],
+['Hospital','West Valley','SimonMed Medical Plaza','Tolleson/Avondale area AZ','(866) 614-8555','natalie.jaime@simonmed.com','Natalie Jaime','Group orders',false],
+['Hospital','West Valley','IMS Care Center Cardiology','Tolleson/Avondale area AZ','(623) 433-0202','','Manager','Group orders',false],
+['Hotel/Resort','West Valley','Holiday Inn Tolleson','Tolleson/Avondale area AZ','(623) 265-7800','gmhiephxwest@gmail.com','JB (GM)','They DO cater',false],
+['Corporate','West Valley','UMB Bank Tolleson','Tolleson/Avondale area AZ','(602) 212-3971','anthony.taylor@umb.com','Anthony Taylor','Sometimes orders lunch together',false],
+['Dealership','West Valley','Kia Tolleson (Ken Garff)','Tolleson/Avondale area AZ','(623) 687-9800','emilyh@kengarff.com','Emily Higuera','Want to cater SATURDAY — HOT LEAD',true],
+['Dealership','West Valley','Echo Park Tolleson','Tolleson/Avondale area AZ','(480) 232-2225','andrew.belyeu@echopark.com','Andrew Belyeu','LOCKED A DEAL ON THE SPOT',true],
+['Dealership','West Valley','AutoNation USA Tolleson','Tolleson/Avondale area AZ','(602) 369-8114','aguirrej2@autonation.com','Jessica Aguirre','Caters on Saturdays',false],
+['Dealership','West Valley','Hyundai Tolleson (Earnhardt)','Tolleson/Avondale area AZ','(623) 388-5800','matthew.applegate@earnhardt.com','Matt Applegate','Caters on Saturdays',false],
+['Dealership','West Valley','Horne Mazda Avondale','Tolleson/Avondale area AZ','(623) 478-3011','r.keelen@hornemazdaavondale.com','Robert Keelen','LOCKED A DEAL ON THE SPOT',true],
+['Dealership','West Valley','Honda Tolleson','Tolleson/Avondale area AZ','(623) 934-5211','','Austin','Call 10am Monday for a deal — HOT',true],
+['Dealership','West Valley','Volkswagen Tolleson','Tolleson/Avondale area AZ','(623) 215-1645','ovilla@asbnuauto.com','Oscar Villa','Deal: $200 for 15 people',false],
+['Dealership','West Valley','Avondale Nissan','Tolleson/Avondale area AZ','(602) 782-1765','michellegonzalez@lithia.com','Michelle Gonzalez','Contact for catering April 4 — $400 for 50 people',false],
+['Dealership','West Valley','Avondale Toyota','Tolleson/Avondale area AZ','(602) 717-3538','ecastro@avondaletoyota.com','Elgin Castro','Open to catering',false],
+['Dealership','West Valley','Gateway Chevy (Ken Garff)','Tolleson/Avondale area AZ','(480) 223-5300','jgranados@kengarff.com','Jose Granados','Open to catering',false],
+['School District','West Valley','Tolleson Union High School','Tolleson AZ 85353','(623) 478-4211','rayotis.perkins@tuhsd.org','Rayotis Perkins','Open to catering — district contact',false],
+['Corporate','West Valley','H&R Block Tolleson','Tolleson/Avondale area AZ','(623) 207-8670','christina.wensell@tax.hrblock.com','Christina Wensell','Open to catering',false],
+['Corporate','West Valley','Belleza Salon Tolleson','Tolleson/Avondale area AZ','(623) 936-5153','','Maria','Open to catering',false],
+['Corporate','West Valley','State Farm 99th Ave','Tolleson/Avondale area AZ','(623) 848-6200','','John','Open to catering',false],
+// ── SURPRISE OUTREACH ──────────────────────────────────────────────────
+['Corporate','West Valley','AutoZone Surprise','13355 W Grand Ave, Surprise AZ 85374','(623) 556-1206','','Commercial Guy','Open — caters often. Come back at 2pm',false],
+['Corporate','West Valley','Cox Store Surprise','13754 W Bell Rd Ste 8, Surprise AZ 85374','(623) 792-5506','','Ryan P','Caters once to twice a month',false],
+['Corporate','West Valley','US Bank Surprise','13753 W Bell Rd, Surprise AZ 85374','(623) 474-3200','suzanne.bodrogi@usbank.com','Suzanne Bodrogi','They cater — very friendly',false],
+['Hospital','West Valley','Animal Medical Center of Surprise','13839 W Bell Rd #109, Surprise AZ 85374','(623) 295-1811','myvet@amcofsurprise.com','Dr. Neil Sweeney','Caters for meetings — friendly',false],
+['Hospital','West Valley','Festival Dental Group Surprise','Surprise AZ 85374','(623) 584-4015','festivaldentalgroup@smilegeneration.com','Meagan Pryor','Very friendly — they cater',false],
+['Corporate','West Valley','Well Groomed Surprise','Surprise AZ 85374','(623) 250-5540','','Manager','Caters every couple of months',false],
+['Hospital','West Valley','HonorHealth Surprise Medical Group','19636 N 27th Ave Ste 306, Phoenix AZ 85027','(602) 956-5900','acervantesmontes@honorhealth.com','A. Cervantes-Montes','Open to catering',false],
+['Dealership','West Valley','Sands Chevrolet Surprise','16991 W Waddell Rd, Surprise AZ 85388','(623) 256-5336','','David Gonzales','Caters EVERY SATURDAY — recurring lead',true],
+['Dealership','West Valley','Surprise Ford','16825 W Waddell Rd, Surprise AZ 85388','(623) 344-4700','','General Manager','GM handles catering',false],
+['Dealership','West Valley','SAG Auto Sales Surprise','13474 N Autoshow Ave, Surprise AZ 85388','(623) 463-2962','mcrook@sandsag.com','Matt Crook','Budget $300 for 35 people',false],
+['Dealership','West Valley','Dion Medlen Germain Cars','13270 N Autoshow Ave, Surprise AZ 85388','(602) 875-8602','dmedlen@germaincars.com','Dion Medlen','Catered with us 3 weeks ago — returning customer',true],
+['Dealership','West Valley','Nissan Coulter Surprise','13301 N Autoshow Ave, Surprise AZ 85388','(623) 934-3444','rdejesus@coulternissan.com','Richard DeJesus','Usually does pizza/subs — pitch switch to Mesquite',false],
+['Dealership','West Valley','Larry H. Miller Keep Surprise','13165 N Autoshow Ave, Surprise AZ 85388','(623) 537-5029','jesus.alvarez@lhmauto.com','Jesse Alvarez','Met most of sales team — budget $250 for 21 people',false],
+['Dealership','West Valley','Sand Kia Surprise','Surprise AZ 85388','(623) 474-3344','jscott@sandskia.com','Justin Scott','Really friendly — would definitely cater',false],
+['Corporate','West Valley','Camping World Surprise','12630 N Autoshow Ave, Surprise AZ 85388','(928) 543-2817','','Manager','Super chill — like Mesquite. Good contact',false],
+['Corporate','West Valley','Costco Surprise','1685 W Waddell Rd, Surprise AZ 85388','(602) 325-1799','w01375mk02@costco.com','Manager','Remember us — email to higher ups sent',false],
+['Hospital','West Valley','Surprise Modern Dentistry','13733 N Prasada Pkwy Ste 108, Surprise AZ 85388','(623) 977-7755','escalanteD@PSDHealth.com','D. Escalante','Does group orders',false],
+['Corporate','West Valley','Sleep Number Surprise','13733 N Prasada Pkwy Suite 112, Surprise AZ 85388','(623) 977-9004','s11154@sleepnumber.com','Manager','Boss might be interested this month',false],
+['Corporate','West Valley','Total Wine Surprise','13440 N Prasada Pkwy, Surprise AZ 85388','(623) 565-8237','gconnelly@totalwine.com','Gabrielle Connelly','Wants to cater',false],
+['Corporate','West Valley','Ulta Surprise','13470 N Prasada Pkwy, Surprise AZ 85388','(480) 418-9241','','Sonia Hernandez','Might be interested',false],
+['Corporate','West Valley','Dicks Sporting Goods Surprise','13030 N Prasada Pkwy, Surprise AZ 85388','(623) 900-9399','brandon.ray@dcsg.com','Brandon Ray','Caters every now and then',false],
+['Corporate','West Valley','Burlington Surprise','13040 N Prasada Pkwy, Surprise AZ 85388','(623) 204-2056','','Lory','Open to catering',false],
+['Corporate','West Valley','Sprouts Surprise','13650 N Prasada Pkwy, Surprise AZ 85388','(480) 864-1358','','Manager','Caters from us OFTEN — existing customer',true],
+['Corporate','West Valley','Fat Cats Surprise','13100 N Prasada Pkwy, Surprise AZ 85388','(623) 231-2610','jon.droski@fatcatsfun.com','Jon Droski','Interested for meetings and staff parties',false],
+['Hotel/Resort','West Valley','Fairfield by Marriott Surprise','13430 N 163rd Dr, Surprise AZ 85388','(480) 757-7200','sales.prasada@performancecapitalpartners.org','Angela Ramirez','Caters sometimes',false],
+['Corporate','West Valley','H&R Block Surprise','17031 W Bell Rd Ste B-106, Surprise AZ 85374','(623) 546-1413','','Manager','Super open — wants to cater soon',false],
+['Corporate','West Valley','Chase Bank Surprise','17073 W Bell Rd, Surprise AZ 85374','(623) 975-1430','','Alicia Brown','They cater',false],
+['Corporate','West Valley','EOS Fitness Surprise','16750 W Bell Rd, Surprise AZ 85374','(480) 651-8190','','Quinn','Open to catering',false],
+['Hospital','West Valley','Rolfe Family Dentistry Surprise','16772 W Bell Rd Suite 100, Surprise AZ 85374','(623) 537-9777','','Nicholas','Would be interested',false],
+['Hospital','West Valley','All Star Animal Hospital Surprise','16772 W Bell Rd #105, Surprise AZ 85374','(623) 546-0202','','Matt Erickson','Might want for holidays',false],
+['Corporate','West Valley','UPS Store Surprise','16772 W Bell Rd Ste 110, Surprise AZ 85374','(623) 556-8255','store4950@theupsstore.com','Nick Hall','Might want for future events',false],
+['Corporate','West Valley','OReilly Surprise','16824 W Bell Rd, Surprise AZ 85374','(623) 975-2670','','Manager','Guys love Mesquite',false],
+['Corporate','West Valley','Musical Surprise','16846 W Bell Rd #106, Surprise AZ 85374','(623) 544-4200','info@musicalsurprise.com','Manager','They cater',false],
+['Corporate','West Valley','BMO Bank Surprise','16890 W Bell Rd, Surprise AZ 85374','(623) 975-5904','','Heather','They cater',false],
+['Corporate','West Valley','Ace Hardware Surprise','17026 W Bell Rd, Surprise AZ 85374','(623) 214-6500','','Manager','Caters on occasion',false],
+['Hospital','West Valley','Aspen Dental Surprise','17018 W Bell Rd, Surprise AZ 85374','(623) 537-9977','rose.cook@aspendental.com','Rose Cook','Has catering for lunches sometimes',false],
+['Hospital','West Valley','Active Eye Care of Surprise','16968 W Bell Rd, Surprise AZ 85374','(623) 214-0353','','Manager','They cater — talked to provider',false],
+['Hospital','West Valley','One Medical Chiropractor Surprise','17014 W Bell Rd Ste 100, Surprise AZ 85374','(415) 252-7176','careteam@mail.chirpcare.com','Stephanie Benton','Interested in catering',false],
+['Hospital','West Valley','IMS Cardiology Surprise','16928 W Bell Rd #702, Surprise AZ 85374','(623) 433-0202','','Manager','Caters sometimes — smaller order',false],
+['Hospital','West Valley','Regency Specialists Surprise','14725 W Mountain View Blvd, Surprise AZ 85374','(623) 556-5007','manager@regencyspecialists.com','Ciara Moore','Big clinic — interested in catering',false],
+['Hospital','West Valley','OrthoArizona Surprise','14733 W Mountain View Blvd Bldg F, Surprise AZ 85374','(623) 848-4711','','Manager','Interested in catering',false],
+['Hospital','West Valley','Desert Bloom Family Medicine','14741 W Mountain View Blvd Ste 155, Surprise AZ 85374','(623) 385-7900','','Christine Rocks-Lopez','Interested in catering',false],
+['Corporate','West Valley','Dynamic Wealth Management Surprise','14749 W Mountain View Blvd #144, Surprise AZ 85374','(623) 537-9800','grant@dynamicwealthmgt.com','Grant Hadden','Interested in catering',false],
+['Hospital','West Valley','Blue Spring Pediatrics Surprise','14765 W Mountain View Blvd, Surprise AZ 85374','(623) 295-1100','ruth.eichelberger@bluespringpediatrics.com','Ruth Eichelberger','Front desk LOVED the food — wants catering event',true],
+['Hospital','West Valley','Premier Dentistry and Implant Center','14765 W Mountain View Blvd Ste 118, Surprise AZ 85374','(623) 537-6000','premierimplantcenter@gmail.com','Minseok Kang','Interested in catering',false],
+['Hospital','West Valley','Happy Ears Hearing Center Surprise','14757 W Mountain View Blvd Ste 120, Surprise AZ 85374','(623) 295-3200','s.dewsnup@happyears.com','Shanna Dewsnup','Interested in catering',false],
+['Corporate','West Valley','Transpak Litchfield Park','16800 W Glendale Ave, Litchfield Park AZ 85340','(623) 535-9090','walter.hernandez@transpak.com','Walter Hernandez','Monthly catering for staff',false],
+['School District','West Valley','Willow Canyon High School Surprise','17901 W Lundberg St, Surprise AZ 85388','(623) 523-8000','wchstb@gmail.com','Tanya (Booster)','Booster club — open to catering',false],
+['Hotel/Resort','West Valley','Best Western Plus Surprise-Phoenix NW','13337 W Grand Ave, Surprise AZ 85374','(623) 544-6874','sales.bwpsurprise@gmail.com','Kristi Momany','Open to catering (smaller establishment)',false],
+['Government','East Valley','City of Mesa HR Dept','20 E Main St, Mesa AZ 85201','(480) 644-2000','','HR / Facilities Manager','City govt, large staff.',true],
+['Government','East Valley','City of Gilbert HR Dept','50 E Civic Center Dr, Gilbert AZ 85296','(480) 503-6800','','HR Director','Gilbert municipal.',false],
+['Government','East Valley','City of Chandler HR Dept','175 S Arizona Ave, Chandler AZ 85225','(480) 782-2490','','HR Director','Chandler municipal.',false],
+['Government','East Valley','City of Tempe HR Dept','31 E 5th St, Tempe AZ 85281','(480) 350-8276','','HR Director','Tempe municipal.',false],
+['Government','Scottsdale','City of Scottsdale HR Dept','3939 N Drinkwater Blvd, Scottsdale AZ 85251','(480) 312-7879','','HR Director','Scottsdale municipal.',false],
+['Government','West Valley','City of Peoria HR Dept','8401 W Monroe St, Peoria AZ 85345','(623) 773-7225','','HR Director','Peoria municipal.',false],
+['Government','West Valley','City of Surprise HR Dept','16000 N Civic Center Plaza, Surprise AZ 85374','(623) 222-1000','','HR Director','Surprise municipal.',false],
+['Government','West Valley','City of Goodyear HR Dept','190 N Litchfield Rd, Goodyear AZ 85338','(623) 932-3910','','HR Director','Goodyear municipal.',false],
+['Government','West Valley','City of Avondale HR Dept','11465 W Civic Center Dr, Avondale AZ 85323','(623) 333-1000','','HR Director','Avondale municipal.',false],
+['Government','West Valley','City of Buckeye HR Dept','530 E Monroe Ave, Buckeye AZ 85326','(623) 349-6000','','HR Director','Buckeye municipal.',false],
+['Government','East Valley','City of Queen Creek HR Dept','22358 S Ellsworth Rd, Queen Creek AZ 85142','(480) 358-3204','','HR Director','Queen Creek municipal.',false],
+['Government','West Valley','Luke Air Force Base','7383 N Litchfield Rd, Glendale AZ 85309','(623) 856-7411','','Civilian Facilities Manager','Civilian catering opportunities.',false],
+['Government','Phoenix','Maricopa County Human Resources','301 W Jefferson St, Phoenix AZ 85003','(602) 506-3755','','HR Director','County govt, thousands of employees.',true],
+['Government','Phoenix','City of Phoenix HR Dept','200 W Washington St, Phoenix AZ 85003','(602) 262-6277','','HR Director','Largest city in AZ, huge staff.',true],
+['Government','Phoenix','Arizona Dept of Transportation','1655 W Jackson St, Phoenix AZ 85007','(602) 712-7000','','HR Coordinator','Large state agency.',false],
+['Government','Phoenix','Arizona Dept of Revenue','1600 W Monroe St, Phoenix AZ 85007','(602) 255-3381','','HR Coordinator','State office.',false],
+['Government','Phoenix','Maricopa County Sheriffs Office','550 W Jackson St, Phoenix AZ 85003','(602) 876-1801','','HR Director','Large county agency.',false],
+// ── HAPPY VALLEY OUTREACH — Real contacts your dad already visited (44) ──
+// ⭐ = HOT LEAD based on notes
+['Corporate','North Valley','Whitman and Jackson CPA','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 455-9630','lisaj@wjcpa.com','Lisa','Ordered from us Friday — they LOVE Mesquite. Call to lock in recurring.',true],
+['Corporate','North Valley','Pediatrix Medical Group','Happy Valley Pkwy area, Phoenix AZ 85085','(602) 866-0550','pediatrix@pediatrixmd.com','Jay','Jay said they are open to catering.',false],
+['Hotel/Resort','North Valley','Home2 Suites by Hilton Happy Valley','2107 W Whispering Wind Dr, Phoenix AZ 85085','(623) 444-6188','ashley.nelson@hilton.com','Ashley Nelson','Does group orders. Strong hotel lead.',false],
+['Hotel/Resort','North Valley','Holiday Inn North Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(765) 278-0233','phxww.gm@azhmg.com','Lacey (GM)','Caters once a month — said next Thursday could be an order. HOT LEAD.',true],
+['Hotel/Resort','North Valley','Residence Inn by Marriott Happy Valley','2535 W Whispering Wind Dr, Phoenix AZ 85085','(623) 879-9000','dtorress@ncghospitality.com','Dani Torres','Open to catering.',false],
+['Corporate','North Valley','TJ Maxx Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 434-7701','','Angelica','Caters once a month.',true],
+['Corporate','North Valley','Spark Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(602) 672-7624','','Manager','Caters for staff once or twice a year.',false],
+['Behavioral Health','North Valley','Action Behavior Centers','2500 W Happy Valley Rd Ste 1180, Phoenix AZ 85085','(480) 751-9506','nohelia.verdugo@actionbehavior.com','Nohelia Verdugo','Budget is $8/person. Open to catering. Behavioral health org.',false],
+['Corporate','North Valley','FPS Civil','Happy Valley Pkwy area, Phoenix AZ 85085','(602) 316-7879','lbrisa@fpscivil.com','L. Brisa','They cater.',false],
+['Corporate','North Valley','Shepherd Contracting','Happy Valley Pkwy area, Phoenix AZ 85085','(480) 886-5006','thomasrshepherd@hotmail.com','Thomas Shepherd','Open to catering.',false],
+['Corporate','North Valley','Schofield Civil','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 322-8662','admin@schofieldcivil.com','Stephanie','Boss LOVES Mesquite — very warm lead.',true],
+['Corporate','North Valley','Shoe Dept Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(480) 658-7388','','Jade','Open to catering.',false],
+['Corporate','North Valley','GNC Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(480) 742-0438','','Cheynn','Open to catering.',false],
+['Corporate','North Valley','Doctors Exchange of Arizona','Happy Valley Pkwy area, Phoenix AZ 85085','(480) 308-2838','','Timothy','Open to catering.',false],
+['Corporate','North Valley','Supercuts North Phoenix Deer Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(602) 622-7736','deervalley@scsalons.com','Laurel','Open to catering.',false],
+['Hospital','North Valley','Banfield Pet Hospital Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 516-2516','julie.magby@banfield.com','Julie Magby','Open to catering.',false],
+['Hospital','North Valley','Deer Valley Dental Group','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 255-3390','cordovavi@pdshealth.com','Office Manager','Open to catering.',false],
+['Corporate','North Valley','AT&T by Michaels Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(602) 344-9994','twills@blwireless.com','Terra Wills','LOVES catering — brings taco trucks now. Push to switch to Mesquite.',true],
+['Corporate','North Valley','Greulichs Auto Service Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 877-2400','mgr1264@greulichs.com','Michael','Catered from Mesquite before — warm returning lead.',true],
+['Corporate','North Valley','BMO Bank Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 445-2042','anthony.paolone@bmo.com','Anthony Paolone','They LOVE Mesquite.',true],
+['Corporate','North Valley','Paddy O Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 283-2529','kevinm@paddyo.com','Kevin','They cater — said reach out to them. Active interest.',true],
+['Corporate','North Valley','One AZ Credit Union Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(602) 644-4682','rkovach@oneazcu.com','Ray Kovach','Open to catering.',false],
+['Corporate','North Valley','Big O Tires Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 516-2446','','Elijah Pedigo','Thinking about catering THIS WEEK. Call immediately.',true],
+['Corporate','North Valley','Dental Design Studios Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 566-0150','happy@ddsarizona.com','Jalil','Think they catered with us before — warm returning lead.',true],
+['Corporate','North Valley','Lovet Veterinary Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(602) 845-5930','vets@norterraah.com','Manager','Want to cater with us again soon.',true],
+['Corporate','North Valley','Adair Homes','Happy Valley Pkwy area, Phoenix AZ 85085','(480) 679-6346','nsforza@adairhomes.com','Nick Forza','Super nice — said email him more info. FOLLOW UP by email.',true],
+['Corporate','North Valley','Sherwin-Williams Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 869-6872','','Carson','Open to catering.',false],
+['Corporate','North Valley','OReilly Auto Parts Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 879-7242','','Emily','Open to catering.',false],
+['Corporate','North Valley','Comerica Bank Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 516-3200','astoltenborg@comerica.com','Andrea Stoltenborg','Caters ~3 times a year.',false],
+['Corporate','North Valley','Snip Vet Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 887-7647','office@snip.vet','Manager','Caters sometimes.',false],
+['Corporate','North Valley','European Wax Center Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 516-2323','ewcwesthappyvalley@gmail.com','Manager','Caters for weekly meetings — recurring potential.',false],
+['Corporate','North Valley','Gap Athleta Happy Valley','2501 W Happy Valley Rd, Phoenix AZ 85085','(623) 582-4949','michelle_megilbrem@store.gap.com','Michelle McGilbrem','Caters for holiday events.',false],
+['Corporate','North Valley','Modern Mods Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 850-5678','','Heather Moss','Caters sometimes.',false],
+['Corporate','North Valley','VisionWorks Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(480) 691-3919','sotto@visionworks.com','Steven Otto','Open to catering.',false],
+['Corporate','North Valley','BevMo Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 434-3371','loc-475@gopuff.com','GM (new)','New GM looking to start catering — get in early.',false],
+['Corporate','North Valley','Club Pilates Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 312-8505','e.northscottsdaleegm@clubpilates.com','Rebecca','Open to catering.',false],
+['Corporate','North Valley','Lovesac Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(602) 922-7399','shopsatnorterra@lovesac.com','Bryan','Open to catering.',false],
+['Corporate','North Valley','Elite Shutters and Blinds','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 986-0320','jill@eliteshuttersandblinds.com','Jill','Open to catering.',false],
+['Corporate','North Valley','Dicks Sporting Goods Happy Valley','2350 W Happy Valley Rd, Phoenix AZ 85085','(623) 434-3388','store365@dc56.com','Manager','Very interested — said Mesquite has good prices.',true],
+['Corporate','North Valley','Orange Theory Happy Valley','2420 W Happy Valley Rd Ste 142, Phoenix AZ 85085','(623) 232-3470','jhamil@orangetheoryfitness.com','Jamie Hamil','Caters every now and then.',false],
+['Corporate','North Valley','Elements Massage Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 444-2402','happyvalleymgr@elementsmassage.com','Jessica Galvez','Open to catering.',false],
+['Hospital','North Valley','OrthoArizona Happy Valley','Happy Valley Pkwy area, Phoenix AZ 85085','(623) 848-4711','','Dr. Wong','Dr. Wong LOVES the food — warm lead.',true],
+['School District','North Valley','Boulder Creek High School','Happy Valley area, Phoenix AZ 85085','(623) 445-8637','','Cindy Clark','Open to catering. Part of DVUSD.',false],
+['School District','North Valley','DVUSD Deer Valley Unified','20402 N 15th Ave, Phoenix AZ 85027','(623) 445-3036','jessica.julien@dvusd.org','Jessica Julien','District-level contact open to catering.',true],,
+['Government','Phoenix','Maricopa Integrated Health System','2601 E Roosevelt St, Phoenix AZ 85008','(602) 344-5011','','HR Director','County health system.',false],
+];
+function init(){
+  const CURRENT_VERSION='mq_crm_v6';
+  const t=new Date().toISOString().split('T')[0];
+  function seed(){
+    contacts=SEED.map((s,i)=>({
+      id:i+1, fn:'Contact', ln:'', co:s[2], addr:s[3], phone:s[4],
+      email:s[5], askFor:s[6], type:s[0], region:s[1], notes:s[7],
+      starred:!!s[8], stage:'Lead', fu:'', src:'Pre-loaded', created:t
+    }));
+    save();
+  }
+  // Wipe all old versions
+  ['mq_crm_v3','mq_crm_v4','mq_crm_v5'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
+  try{
+    const r=localStorage.getItem(CURRENT_VERSION);
+    if(!r){seed();return;}
+    const parsed=JSON.parse(r);
+    if(!Array.isArray(parsed)||parsed.length===0){seed();return;}
+    // Validate every contact has required fields and correct types
+    const valid=parsed.every(c=>
+      c && typeof c==='object' &&
+      typeof c.id==='number' &&
+      typeof c.co==='string' &&
+      typeof c.starred==='boolean' &&
+      typeof c.stage==='string'
+    );
+    if(!valid){seed();return;}
+    contacts=parsed;
+  }catch(e){seed();}
+}
+function save(){try{localStorage.setItem('mq_crm_v6',JSON.stringify(contacts))}catch(e){}}
+window.onload=()=>{init();ra()};
+function ra(){us();rt();rs2();rp();rep();document.getElementById('np-all').textContent=contacts.length;document.getElementById('np-star').textContent=contacts.filter(c=>c.starred).length;}
+function us(){
+  document.getElementById('sT').textContent=contacts.length;
+  document.getElementById('sS').textContent=contacts.filter(c=>c.starred).length;
+  document.getElementById('sD').textContent=contacts.filter(c=>c.type==='Dealership').length;
+  document.getElementById('sH').textContent=contacts.filter(c=>c.type==='Hospital').length;
+  document.getElementById('sC').textContent=contacts.filter(c=>c.type==='Corporate').length;
+  document.getElementById('sSd').textContent=contacts.filter(c=>c.type==='School District').length;
+  document.getElementById('sHt').textContent=contacts.filter(c=>c.type==='Hotel/Resort').length;
+  document.getElementById('sG').textContent=contacts.filter(c=>c.type==='Government').length;
+  document.getElementById('sBh').textContent=contacts.filter(c=>c.type==='Behavioral Health').length;
+}
+function gf(q,sf,tf,rf){
+  const ql=(q||'').toLowerCase();
+  return contacts.filter(c=>{
+    const mq=!ql||`${c.co} ${c.addr} ${c.phone} ${c.region} ${c.type} ${c.askFor}`.toLowerCase().includes(ql);
+    return mq&&(!sf||c.stage===sf)&&(!tf||c.type===tf)&&(!rf||c.region===rf);
+  });
+}
+function rh(c,i){
+  const ico=TI[c.type]||'';
+  return`<div class="tr${i%2===0?' alt':''}" onclick="od(${c.id})">
+    <div onclick="event.stopPropagation()"><button class="sb2${c.starred?' lit':''}" onclick="ts(${c.id})">&#9733;</button></div>
+    <div><div class="cn">${c.co}</div><div class="cs">${c.askFor||'Ask for Office Manager'}</div></div>
+    <div class="cs" style="font-size:11px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.addr||'—'}</div>
+    <div class="mono">${c.phone||'—'}</div>
+    <div><span class="pill ${TC[c.type]||'pGv'}">${ico} ${c.type}</span></div>
+    <div><span class="stg">${c.stage}</span></div>
+    <div class="ra" onclick="event.stopPropagation()">
+      <button class="ib" onclick="oef(${c.id})">&#9998;</button>
+      <button class="ib" onclick="dc(${c.id})">&#10005;</button>
+    </div>
+  </div>`;
+}
+function rt(q){
+  if(q===undefined)q=document.getElementById('searchBox')?.value||'';
+  const sf=document.getElementById('stageFilter')?.value||'';
+  const list=gf(q,sf,typeF,regionF);
+  document.getElementById('tbody').innerHTML=list.length?list.map((c,i)=>rh(c,i)).join(''):`<div class="empty">No contacts found</div>`;
+}
+function rs2(){const list=contacts.filter(c=>c.starred);document.getElementById('starbody').innerHTML=list.length?list.map((c,i)=>rh(c,i)).join(''):`<div class="empty">Star contacts to see them here</div>`;}
+function rp(){
+  document.getElementById('pipelineBoard').innerHTML=STAGES.map(s=>{
+    const cards=contacts.filter(c=>c.stage===s);
+    return`<div class="pcol"><div class="pch"><span style="font-size:10px;color:var(--mu)">${s}</span><span class="pcc">${cards.length}</span></div>${cards.map(c=>`<div class="pc" onclick="od(${c.id})"><div class="pcn">${c.co}</div><div class="pct">${c.type}</div></div>`).join('')||'<div style="font-size:11px;color:var(--mu);text-align:center;padding:10px 0">Empty</div>'}</div>`;
+  }).join('');
+}
+function rep(){
+  const hdr='company,address,phone,email,jobtitle,lifecyclestage,type,region,notes';
+  const rows=contacts.slice(0,3).map(c=>`"${c.co}","${c.addr}","${c.phone}","${c.email||''}","${c.askFor||''}",${SHS[c.stage]},"${c.type}","${c.region}","${(c.notes||'').replace(/"/g,"'")}"`);
+  const el=document.getElementById('expPrev');if(el)el.textContent=hdr+'\n'+rows.join('\n')+'\n...';
+}
+function doExp(){
+  const hdr='firstname,lastname,company,address,phone,email,jobtitle,lifecyclestage,type,region,notes,createdate';
+  const rows=contacts.map(c=>`${c.fn},${c.ln},"${c.co}","${c.addr||''}","${c.phone||''}","${c.email||''}","${c.askFor||''}",${SHS[c.stage]},"${c.type}","${c.region||''}","${(c.notes||'').replace(/"/g,"'")}","${c.created||''}"`);
+  const csv=[hdr,...rows].join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='mesquite_catering_'+new Date().toISOString().split('T')[0]+'.csv';a.click();toast('CSV downloaded!');
+}
+function ts(id){const c=contacts.find(x=>x.id===id||x.id===Number(id));if(!c)return;c.starred=!c.starred;save();ra();toast(c.starred?'Starred!':'Unstarred');}
+function od(id){
+  const c=contacts.find(x=>x.id===id||x.id===Number(id));if(!c)return;editId=id;
+  document.getElementById('detTitle').textContent=c.co;
+  document.getElementById('detFields').innerHTML=`
+    <div class="df"><label>Full Address</label><span style="font-size:12px">${c.addr||'—'}</span></div>
+    <div class="df"><label>Phone</label><span style="font-family:monospace">${c.phone||'—'}</span></div>
+    <div class="df"><label>Email</label><span style="color:var(--bl)">${c.email||'—'}</span></div>
+    <div class="df"><label>Type</label><span><span class="pill ${TC[c.type]||'pGv'}">${TI[c.type]||''} ${c.type}</span></span></div>
+    <div class="df"><label>Region</label><span>${c.region||'—'}</span></div>
+    <div class="df"><label>Stage</label><span><span class="stg">${c.stage}</span></span></div>
+    <div class="df"><label>Ask For</label><span>${c.askFor||'—'}</span></div>
+    <div class="df"><label>Follow-Up</label><span>${c.fu||'Not set'}</span></div>`;
+  document.getElementById('detNotes').textContent=c.notes||'No notes yet.';
+  document.getElementById('stageBtns').innerHTML=STAGES.filter(s=>s!==c.stage).map(s=>`<button class="btn" style="font-size:11px;padding:4px 8px" onclick="ms(${c.id},'${s}')">&#8594; ${s}</button>`).join('');
+  sv('detail');
+}
+function ms(id,stage){const c=contacts.find(x=>x.id===id||x.id===Number(id));if(!c)return;c.stage=stage;save();od(id);rp();toast('Moved to '+stage);}
+function openAdd(){editId=null;document.getElementById('modalTitle').textContent='Add Contact';cf();const d=new Date();d.setDate(d.getDate()+2);document.getElementById('fFU').value=d.toISOString().split('T')[0];document.getElementById('modalOv').classList.add('on');}
+function oef(id){const c=contacts.find(x=>x.id===id||x.id===Number(id));if(!c)return;editId=id;document.getElementById('modalTitle').textContent='Edit: '+c.co;document.getElementById('fFN').value=c.fn||'';document.getElementById('fLN').value=c.ln||'';document.getElementById('fCo').value=c.co;document.getElementById('fTi').value=c.askFor||'';document.getElementById('fPh').value=c.phone||'';document.getElementById('fEm').value=c.email||'';document.getElementById('fAd').value=c.addr||'';document.getElementById('fTy').value=c.type;document.getElementById('fRg').value=c.region||'East Valley';document.getElementById('fSt').value=c.stage;document.getElementById('fFU').value=c.fu||'';document.getElementById('fNo').value=c.notes||'';document.getElementById('modalOv').classList.add('on');}
+function oec(){if(editId)oef(editId);}
+function cm(){document.getElementById('modalOv').classList.remove('on');}
+function cf(){['fFN','fLN','fCo','fTi','fPh','fEm','fAd','fNo'].forEach(i=>document.getElementById(i).value='');document.getElementById('fTy').value='Dealership';document.getElementById('fRg').value='East Valley';document.getElementById('fSt').value='Lead';document.getElementById('fFU').value='';}
+function sc2(){
+  const co=document.getElementById('fCo').value.trim();
+  if(!co){toast('Company name required');return;}
+  const data={fn:document.getElementById('fFN').value.trim()||'Contact',ln:document.getElementById('fLN').value.trim(),co,addr:document.getElementById('fAd').value.trim(),phone:document.getElementById('fPh').value.trim(),email:document.getElementById('fEm').value.trim(),askFor:document.getElementById('fTi').value.trim(),type:document.getElementById('fTy').value,region:document.getElementById('fRg').value,stage:document.getElementById('fSt').value,fu:document.getElementById('fFU').value,notes:document.getElementById('fNo').value.trim(),src:'Manual'};
+  if(editId){const i=contacts.findIndex(c=>c.id===editId);contacts[i]={...contacts[i],...data};toast('Updated!');}
+  else{data.id=Date.now();data.starred=false;data.created=new Date().toISOString().split('T')[0];contacts.push(data);toast('Added!');}
+  save();cm();ra();
+}
+function dc(id){if(!confirm('Delete this contact?'))return;contacts=contacts.filter(c=>c.id!==id&&c.id!==Number(id));save();ra();toast('Deleted');}
+function sv(name,el){
+  typeF=null;regionF=null;
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  if(el)el.classList.add('on');
+  else{const m={contacts:'nav-all',starred:'nav-star',pipeline:'nav-pipeline',apollo:'nav-apollo',scripts:'nav-scripts',export:'nav-export',detail:null};const k=m[name];if(k)document.getElementById(k)?.classList.add('on');}
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+  document.getElementById('view-'+name)?.classList.add('on');
+  if(document.getElementById('vtitle'))document.getElementById('vtitle').textContent='All Contacts';
+  if(name==='export')rep();if(name==='contacts')rt();if(name==='pipeline')rp();
+}
+function ft(type,el){typeF=type;regionF=null;document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));if(el)el.classList.add('on');document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById('view-contacts').classList.add('on');document.getElementById('vtitle').textContent=type+'s';document.getElementById('stageFilter').value='';document.getElementById('searchBox').value='';rt('');}
+function fr(region,el){regionF=region;typeF=null;document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));if(el)el.classList.add('on');document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));document.getElementById('view-contacts').classList.add('on');document.getElementById('vtitle').textContent=region;document.getElementById('stageFilter').value='';document.getElementById('searchBox').value='';rt('');}
+function copy(i){navigator.clipboard.writeText(SCRPTS[i]).catch(()=>{});toast('Copied!');}
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200);}
+</script>
+</body>
+</html>
